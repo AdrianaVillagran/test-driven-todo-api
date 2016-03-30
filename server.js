@@ -47,8 +47,14 @@ app.get('/api/todos/search', function search(req, res) {
   /* This endpoint responds with the search results from the
    * query in the request. COMPLETE THIS ENDPOINT LAST.
    */
-   var searchTodo = req.query.searchTodo;
-   res.send({todos:todos});
+   var searchTodo = req.query.q;
+   var matchedTodos = [];
+   todos.forEach(function compare(thisTodo) {
+     if(searchTodo === thisTodo.task) {
+       matchedTodos.push(thisTodo);
+     }
+   });
+   res.send({todos:matchedTodos});
  });
 
 app.get('/api/todos', function index(req, res) {
@@ -74,9 +80,13 @@ app.get('/api/todos/:id', function show(req, res) {
    * id specified in the route parameter (:id)
    */
    var id = parseInt(req.params.id);
-   var foundTodo = todos.filter(function (todo) {
-     return todo._id === id;
-   })[0];
+   console.log(typeof id);
+   var foundTodo;
+   todos.forEach(function (thisTodo) {
+     if (thisTodo._id === id) {
+       foundTodo = thisTodo;
+     }
+   });
    res.json(foundTodo);
 });
 
@@ -89,9 +99,12 @@ app.put('/api/todos/:id', function update(req, res) {
   var id = parseInt(req.params.id);
 
   // find todo to update by its id
-  var todoToUpdate = todos.filter(function (todo) {
-    return todo._id === id;
-  })[0];
+  var todoToUpdate;
+  todos.forEach(function (thisTodo) {
+    if (thisTodo._id === id) {
+      todoToUpdate = thisTodo;
+    }
+  });
 
   // update the todo's task
   todoToUpdate.task = req.body.task;
@@ -112,9 +125,12 @@ app.delete('/api/todos/:id', function destroy(req, res) {
    * with success.
    */
    var id = parseInt(req.params.id);
-   var todoToDelete = todos.filter(function (todo) {
-     return todo._id === id;
-   })[0];
+   var todoToDelete;
+   todos.forEach(function (thisTodo) {
+     if (thisTodo._id === id) {
+       todoToDelete = thisTodo;
+     }
+   });
    res.send(todoToDelete);
    todos.splice(todos.indexOf(todoToDelete), 1);
 
